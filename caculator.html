@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-tw">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MathSolver 數學計算中心</title>
+    <style>
+      *{box-sizing:border-box}
+      body{margin:0;background:#080f20;color:#e5edff;font-family:Arial,"Noto Sans TC",sans-serif}
+      header{padding:28px;background:linear-gradient(120deg,#172554,#312e81);text-align:center}
+      header h1{margin:0;font-size:30px}
+      header p{color:#bfdbfe}
+      main{max-width:850px;margin:25px auto;padding:15px}
+      .panel{background:#111d33;border:1px solid #293c5c;border-radius:16px;padding:20px;margin-bottom:18px}
+      nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+      button,select,input{font:inherit;border-radius:9px;padding:12px;border:1px solid #344969}
+      button{cursor:pointer;background:#1e40af;color:white}
+      button:hover{background:#2563eb}
+      input,select{background:#0b1528;color:white;width:100%;margin:6px 0}
+      nav button{flex:1}
+      nav button.active{background:#2563eb}
+      .hidden{display:none!important}
+      .keys{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:15px 0}
+      .keys button{background:#1b2c48;font-size:17px}
+      .result{background:linear-gradient(120deg,#172554,#312e81);padding:20px;border-radius:12px;margin-top:15px;overflow-wrap:anywhere}
+      .answer{font-size:30px;font-weight:bold;margin-top:10px;color:#86efac}
+      .steps{border-left:3px solid #3b82f6;padding:10px;margin:12px 0;background:#17243b}
+      label{font-size:14px;color:#a9c3ed}
+      .row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+      @media(max-width:520px){main{padding:10px}.panel{padding:14px}.keys{gap:5px}.keys button{padding:12px 2px}.row{gap:5px}}
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>∑ MathSolver</h1>
+      <p>智慧數學計算與方程式求解中心</p>
+    </header>
+    <main>
+      <nav>
+        <button class="active" data-tab="calc">計算機</button>
+        <button data-tab="equation">方程式</button>
+        <button data-tab="advanced">進階數學</button>
+        <button data-tab="history">計算紀錄</button>
+      </nav>
+
+      <section id="calc" class="panel">
+        <h2>科學計算機</h2>
+        <label>計算角度</label>
+        <select id="angle">
+          <option value="DEG">角度 DEG</option>
+          <option value="RAD">弧度 RAD</option>
+        </select>
+        <input id="expr" placeholder="例如：2*(5+3)^2" />
+        <div class="keys" id="keys">
+          <button data-v="sin(">sin</button>
+          <button data-v="cos(">cos</button>
+          <button data-v="tan(">tan</button>
+          <button data-v="sqrt(">√</button>
+          <button data-v="^2">x²</button>
+          <button data-v="log(">log</button>
+          <button data-v="ln(">ln</button>
+          <button data-v="pi">π</button>
+          <button data-v="^">xʸ</button>
+          <button data-v="!">n!</button>
+          <button data-v="7">7</button>
+          <button data-v="8">8</button>
+          <button data-v="9">9</button>
+          <button data-v="/">÷</button>
+          <button data-v="(">(</button>
+          <button data-v="4">4</button>
+          <button data-v="5">5</button>
+          <button data-v="6">6</button>
+          <button data-v="*">×</button>
+          <button data-v=")">)</button>
+          <button data-v="1">1</button>
+          <button data-v="2">2</button>
+          <button data-v="3">3</button>
+          <button data-v="-">−</button>
+          <button data-v="^3">x³</button>
+          <button data-v="0">0</button>
+          <button data-v=".">.</button>
+          <button data-v="00">00</button>
+          <button data-v="+">+</button>
+          <button id="back">⌫</button>
+        </div>
+        <button id="calculate" style="width:100%">＝ 計算</button>
+        <button id="clear" style="width:100%;margin-top:8px;background:#334155">清除</button>
+        <div class="result">
+          <div>計算結果</div>
+          <div class="answer" id="answer">等待計算</div>
+        </div>
+      </section>
+
+      <section id="equation" class="panel hidden">
+        <h2>方程式求解器</h2>
+        <label>方程式類型</label>
+        <select id="eqtype">
+          <option value="linear">一次方程式 ax + b = 0</option>
+          <option value="quad">二次方程式 ax² + bx + c = 0</option>
+        </select>
+        <div class="row">
+          <div>
+            <label>a</label>
+            <input id="a" type="number" value="1" step="any" />
+          </div>
+          <div>
+            <label>b</label>
+            <input id="b" type="number" value="-5" step="any" />
+          </div>
+          <div id="cbox" class="hidden">
+            <label>c</label>
+            <input id="c" type="number" value="6" step="any" />
+          </div>
+        </div>
+        <button id="solve" style="width:100%">開始求解</button>
+        <div class="result" id="eqresult"></div>
+      </section>
+
+      <section id="advanced" class="panel hidden">
+        <h2>進階數學工具</h2>
+        <label>運算類型</label>
+        <select id="advtype">
+          <option value="percent">百分比</option>
+          <option value="power">次方</option>
+          <option value="sqrt">平方根</option>
+          <option value="log">對數</option>
+          <option value="derivative">多項式微分</option>
+          <option value="integral">多項式積分</option>
+        </select>
+        <div id="normalfields" class="row">
+          <div>
+            <label>數值</label>
+            <input id="v1" type="number" value="200" />
+          </div>
+          <div>
+            <label>第二數值</label>
+            <input id="v2" type="number" value="15" />
+          </div>
+        </div>
+        <div id="polybox" class="hidden">
+          <label>多項式係數（由最高次項至常數，逗號分隔）</label>
+          <input id="poly" value="3,2,1" />
+        </div>
+        <button id="advancedrun" style="width:100%">執行運算</button>
+        <div class="result" id="advresult"></div>
+      </section>
+
+      <section id="history" class="panel hidden">
+        <h2>計算紀錄</h2>
+        <button id="historyclear">清除紀錄</button>
+        <div id="historylist">尚無紀錄</div>
+      </section>
+
+      <section class="panel">
+        <h2>解題步驟與解析</h2>
+        <div id="steps">完成計算後，這裡將顯示詳細解題步驟。</div>
+      </section>
+    </main>
+    <script>
+      const $=id=>document.getElementById(id);
+      let history=[];
+      function fmt(n){return Number.isFinite(n)?Number(n.toPrecision(12)).toString():String(n)}
+      function showSteps(arr){$("steps").innerHTML=arr.map((s,i)=>`<div class="steps">步驟 ${i+1}<br>${s}</div>`).join("")}
+      function record(q,r){
+      history.unshift([q,r]);history=history.slice(0,30);
+      $("historylist").innerHTML=history.map(x=>`<div class="steps">${x[0]}<br><b>${x[1]}</b></div>`).join("");
+      }
+      document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{
+      document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x===b));
+      ["calc","equation","advanced","history"].forEach(id=>$(id).classList.toggle("hidden",id!==b.dataset.tab));
+      });
+      $("keys").onclick=e=>{
+      if(e.target.dataset.v!==undefined){
+      let i=$("expr"),s=i.selectionStart,t=i.selectionEnd;
+      i.setRangeText(e.target.dataset.v,s,t,"end");i.focus();
+      }};
+      $("back").onclick=()=>{
+      let i=$("expr"),s=i.selectionStart,t=i.selectionEnd;
+      if(s===t&&s>0)s--;
+      i.setRangeText("",s,t,"end");i.focus();
+      };
+      $("clear").onclick=()=>{$("expr").value="";$("answer").textContent="等待計算"};
+      $("calculate").onclick=()=>{
+      try{
+      let q=$("expr").value;
+      let tokens=q.match(/(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?|[a-zA-Z]+|[+\-*/^!()]|\s+/gi)||[];
+      let cleaned=tokens.join("");
+      if(cleaned.replace(/\s/g,"")!==q.replace(/\s/g,"")||!q.trim())throw Error("算式格式錯誤");
+      let p=0;
+      let t=tokens.filter(x=>! /^\s+$/.test(x)).map(x=>/^(?:\d|\.)/.test(x)?{t:"n",v:Number(x)}:{t:/^[a-z]/i.test(x)?"id":x,v:x.toLowerCase()});
+      function expr(){return add()}
+      function add(){let v=mul();while(t[p]?.t==="+"||t[p]?.t==="-"){let op=t[p++].t,b=mul();v=op==="+"?v+b:v-b}return v}
+      function mul(){let v=unary();while(t[p]?.t==="*"||t[p]?.t==="/"){let op=t[p++].t,b=unary();if(op==="/"&&b===0)throw Error("不能除以零");v=op==="*"?v*b:v/b}return v}
+      function unary(){if(t[p]?.t==="-"){p++;return -unary()}if(t[p]?.t==="+"){p++;return unary()}return power()}
+      function power(){let v=post();if(t[p]?.t==="^"){p++;v=Math.pow(v,unary())}return v}
+      function post(){let v=atom();while(t[p]?.t==="!"){p++;if(!Number.isInteger(v)||v<0||v>170)throw Error("階乘限非負整數");let n=1;for(let j=2;j<=v;j++)n*=j;v=n}return v}
+      function atom(){
+      let z=t[p++];if(!z)throw Error("算式不完整");
+      if(z.t==="n")return z.v;
+      if(z.t==="("){let v=expr();if(t[p++]?.t!==")")throw Error("括號不完整");return v}
+      if(z.t==="id"){
+      if(z.v==="pi")return Math.PI;if(z.v==="e")return Math.E;
+      if(t[p++]?.t!=="(")throw Error("函數需要括號");
+      let v=expr();if(t[p++]?.t!==")")throw Error("函數括號不完整");
+      if(["sqrt","log","ln"].includes(z.v)&&v<=0&&z.v!=="sqrt")throw Error("對數真數必須大於零");
+      if(z.v==="sqrt"&&v<0)throw Error("不能開負數的實數平方根");
+      let x=$("angle").value==="DEG"?v*Math.PI/180:v;
+      let f={sin:()=>Math.sin(x),cos:()=>Math.cos(x),tan:()=>Math.tan(x),sqrt:()=>Math.sqrt(v),log:()=>Math.log10(v),ln:()=>Math.log(v),abs:()=>Math.abs(v)}[z.v];
+      if(!f)throw Error("不支援的函數");return f();
+      }
+      throw Error("算式錯誤");
+      }
+      let result=expr();
+      if(p!==t.length||!Number.isFinite(result))throw Error("無效的數學運算");
+      let r=fmt(result);$("answer").textContent=r;
+      showSteps([`原始算式：${q}`,"依照括號、次方、乘除、加減的優先順序計算。",`最終結果：${r}`]);record(q,r);
+      }catch(e){$("answer").textContent="錯誤："+e.message;showSteps([e.message])}
+      };
+      $("eqtype").onchange=()=>{$("cbox").classList.toggle("hidden",$("eqtype").value!=="quad")};
+      $("solve").onclick=()=>{
+      let a=Number($("a").value),b=Number($("b").value),c=Number($("c").value);
+      let s=[],r=[];
+      if(!Number.isFinite(a)||!Number.isFinite(b)||($("eqtype").value==="quad"&&!Number.isFinite(c))){$("eqresult").textContent="請輸入有效係數";return}
+      if($("eqtype").value==="linear"){
+      s.push(`原式：${a}x + (${b}) = 0`);
+      if(a===0)r.push(b===0?"所有實數皆為解":"無解");
+      else{let x=-b/a;r.push("x = "+fmt(x));s.push(`${a}x = ${-b}`,`x = ${-b} ÷ ${a}`,`答案：x = ${fmt(x)}`)}
+      }else if(a===0){
+      if(b===0)r.push(c===0?"所有實數皆為解":"無解");
+      else{r.push("x = "+fmt(-c/b));s.push("此式退化為一次方程式。")}
+      }else{
+      let d=b*b-4*a*c;
+      s.push(`原式：${a}x² + (${b})x + (${c}) = 0`,`判別式 Δ = b² - 4ac = ${fmt(d)}`);
+      if(d>0){let x1=(-b+Math.sqrt(d))/(2*a),x2=(-b-Math.sqrt(d))/(2*a);r=[`x₁ = ${fmt(x1)}`,`x₂ = ${fmt(x2)}`];s.push("套用公式 x = (-b ± √Δ) / 2a",...r)}
+      else if(d===0){let x=-b/(2*a);r=["重根 x = "+fmt(x)];s.push(`x = -b / 2a = ${fmt(x)}`)}
+      else{let re=-b/(2*a),im=Math.sqrt(-d)/Math.abs(2*a);r=[`x₁ = ${fmt(re)} + ${fmt(im)}i`,`x₂ = ${fmt(re)} - ${fmt(im)}i`];s.push("判別式小於零，存在兩個共軛複數根。")}
+      }
+      $("eqresult").innerHTML=r.map(x=>`<div class="answer">${x}</div>`).join("");
+      showSteps(s);record("方程式求解",r.join("；"));
+      };
+      $("advtype").onchange=()=>{
+      let p=["derivative","integral"].includes($("advtype").value);
+      $("normalfields").classList.toggle("hidden",p);$("polybox").classList.toggle("hidden",!p);
+      };
+      $("advancedrun").onclick=()=>{
+      try{
+      let t=$("advtype").value,a=Number($("v1").value),b=Number($("v2").value),r,s=[];
+      if(t==="derivative"||t==="integral"){
+      let ar=$("poly").value.split(",").map(Number);
+      if(!ar.length||ar.length>16||ar.some(x=>!Number.isFinite(x)))throw Error("係數格式錯誤");
+      let n=ar.length-1;
+      r=ar.map((v,i)=>{
+      let power=n-i+(t==="integral"?1:-1);
+      let coef=t==="integral"?v/power:v*(n-i);
+      if(t==="derivative"&&n-i===0)return "";
+      if(!coef)return "";
+      return (i&&coef>0?"+":"")+fmt(coef)+(power===0?"":power===1?"x":"x^"+power);
+      }).filter(Boolean).join(" ")||"0";
+      if(t==="integral")r+=" + C";
+      s=[`原多項式係數：${ar.join(", ")}`,t==="derivative"?"使用微分公式 d(xⁿ)/dx = nxⁿ⁻¹":"使用積分公式 ∫xⁿdx = xⁿ⁺¹/(n+1) + C","結果："+r];
+      }else{
+      if(!Number.isFinite(a)||!Number.isFinite(b))throw Error("請輸入有效數字");
+      if(t==="percent"){r=fmt(a*b/100);s=[`${a} × ${b}%`,`= ${r}`]}
+      if(t==="power"){r=fmt(a**b);s=[`${a} 的 ${b} 次方`,`= ${r}`]}
+      if(t==="sqrt"){if(a<0)throw Error("不能對負數開實數平方根");r=fmt(Math.sqrt(a));s=[`√${a}`,`= ${r}`]}
+      if(t==="log"){let base=b||10;if(a<=0||base<=0||base===1)throw Error("對數參數錯誤");r=fmt(Math.log(a)/Math.log(base));s=[`log₍${base}₎(${a})`,`= ln(${a}) / ln(${base})`,`= ${r}`]}
+      }
+      $("advresult").innerHTML=`<div class="answer">${r}</div>`;showSteps(s);record("進階運算",r);
+      }catch(e){$("advresult").textContent=e.message;showSteps([e.message])}
+      };
+      $("historyclear").onclick=()=>{history=[];$("historylist").textContent="尚無紀錄"};
+    </script>
+  </body>
+</html>
